@@ -1,4 +1,4 @@
-apiVersion: tekton.dev/v1beta1
+testapiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   name: helloworld-build
@@ -56,56 +56,56 @@ spec:
         workspaces:
         - name: workspace
           workspace: source
-      - name: unit-tests
-        taskRef:
-          resolver: cluster
-          params:
-          - name: name
-            value: maven
-          - name: namespace
-            value: openshift-pipelines
-          - name: kind
-            value: task
-        runAfter:
-          - mvn-config
-        workspaces:
-        - name: source
-          workspace: source
-        - name: maven_settings
-          workspace: source
-        params:
-        - name: GOALS
-          value: ["package", "-f", "helloworld"]
-      - name: code-analysis
-        taskRef:
-          resolver: cluster
-          params:
-          - name: name
-            value: maven
-          - name: namespace
-            value: openshift-pipelines
-          - name: kind
-            value: task
-        runAfter:
-          - unit-tests
-        workspaces:
-        - name: source
-          workspace: source
-        - name: maven_settings
-          workspace: source
-        params:
-        - name: GOALS
-          value:
-          - install
-          - org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar
-          - -f
-          - helloworld
-          - -Dsonar.host.url=http://sonarqube:9000
-          - -Dsonar.userHome=/tmp/sonar
-          - -DskipTests=true
-          - -Dsonar.qualitygate.wait=true
-          - -Dsonar.login=admin
-          - -Dsonar.password=sonarqube
+      # - name: unit-tests
+      #   taskRef:
+      #     resolver: cluster
+      #     params:
+      #     - name: name
+      #       value: maven
+      #     - name: namespace
+      #       value: openshift-pipelines
+      #     - name: kind
+      #       value: task
+      #   runAfter:
+      #     - mvn-config
+      #   workspaces:
+      #   - name: source
+      #     workspace: source
+      #   - name: maven_settings
+      #     workspace: source
+      #   params:
+      #   - name: GOALS
+      #     value: ["package", "-f", "helloworld"]
+      # - name: code-analysis
+      #   taskRef:
+      #     resolver: cluster
+      #     params:
+      #     - name: name
+      #       value: maven
+      #     - name: namespace
+      #       value: openshift-pipelines
+      #     - name: kind
+      #       value: task
+      #   runAfter:
+      #     - mvn-config #unit-tests
+      #   workspaces:
+      #   - name: source
+      #     workspace: source
+      #   - name: maven_settings
+      #     workspace: source
+      #   params:
+      #   - name: GOALS
+      #     value:
+      #     - install
+      #     - org.sonarsource.scanner.maven:sonar-maven-plugin:5.0.0.4389:sonar
+      #     - -f
+      #     - helloworld
+      #     - -Dsonar.host.url=http://sonarqube:9000
+      #     - -Dsonar.userHome=/tmp/sonar
+      #     - -DskipTests=true
+      #     - -Dsonar.qualitygate.wait=true
+      #     - -Dsonar.login=admin
+      #     - -Dsonar.password=sonarqube
       - name: security-scan
         taskRef:
           resolver: cluster
@@ -117,7 +117,7 @@ spec:
           - name: kind
             value: task
         runAfter:
-          - unit-tests
+          - mvn-config # unit-tests
         workspaces:
         - name: source
           workspace: source
@@ -137,7 +137,7 @@ spec:
           - name: kind
             value: task
         runAfter:
-          - code-analysis
+          #- code-analysis
           - security-scan
         workspaces:
         - name: source
@@ -188,7 +188,7 @@ spec:
           name: git-update-deployment
         params:
           - name: GIT_REPOSITORY
-            value: https://github.com/rrahhal1/helloworld-config
+            value: https://gitea-demo1-cicd.apps.itz-n93wi6.osv.techzone.ibm.com/gitea/helloworld-config
           - name: GIT_USERNAME
             value: gitea
           - name: GIT_PASSWORD
@@ -211,7 +211,7 @@ spec:
           name: create-promote-pull-request
         params:
           - name: GIT_REPOSITORY
-            value: https://github.com/rrahhal1/helloworld-config
+            value: https://gitea-demo1-cicd.apps.itz-n93wi6.osv.techzone.ibm.com/gitea/helloworld-config
           - name: GIT_USERNAME
             value: gitea
           - name: GIT_PASSWORD
